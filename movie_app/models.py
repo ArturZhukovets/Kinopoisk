@@ -32,11 +32,12 @@ Q может содержать условия AND и OR. AND = &, OR = |, та�
 
             """
 
-
 from django.db import models
+from django.urls import reverse
+from django.utils.text import slugify    #Для slug
+from django.utils.safestring import SafeText, mark_safe
 
 # from movie_app.models import Movie
-
 
 
 class Movie(models.Model):
@@ -44,13 +45,33 @@ class Movie(models.Model):
      Дальше в качестве атрибутов этого класса создаются колонки. Колонка ID создаётся автоматически ID_PRIMARY_KEY auto_increment
      После создания модели, в БД ничего отображаться не будет, до того как я не подтвержу Миграции (manage.py makemigrations
      manage.py migrations)."""
-    name = models.CharField(max_length=40)              # создаю поле, в котором содержится строка не более 40 символов
-    rating = models.IntegerField()                      # создаю поле, в котором содержатся только числа integer
-    year = models.IntegerField(null=True)               # позволил сохранять в таблице значение Null
-    budget = models.IntegerField(default=1000000)                      # установил дефолтное значение
+    EURO = 'EUR'
+    USD = 'USD'
+    RUB = 'RUB'
+    CURRENCY_CHOICES = [
+        ('RUB', 'RUBLES'),
+        ('EUR', 'EURO'),
+        ('USD', 'DOLLARS')
+    ]
+    name = models.CharField(max_length=40)  # создаю поле, в котором содержится строка не более 40 символов
+    rating = models.IntegerField()  # создаю поле, в котором содержатся только числа integer
+    year = models.IntegerField(null=True, blank=True)  # позволил сохранять в таблице значение Null, аргумент blank позволяет оставлять незаполненное поле
+    budget = models.IntegerField(default=1000000)  # установил дефолтное значение
+    ### SlugField Специальный метод у класса models, позволяющий создавать Slug url
+    slug = models.SlugField(max_length=30, default='', null=False, db_index=True, allow_unicode=True)  # По-дефолту пустая строка. allow_unicode для работы с кириллицей. db_index для более быстрого поиска
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default=USD)
 
-    def __str__(self):                                  # методом __str__ можно поменять тип отображения объектов.
-        return f'{self.name} - {self.rating}%'          # метод стр переопределяет поведение экземпляров
+    def save(self, *args, **kwargs):
+        """Переопределяю метод save() у родительского класса Model"""
+        self.slug = slugify(self.name, allow_unicode=True)       # Преобразовываю в слаг формат название фильма allow_unicod - для работы с кирилицей
+        super(Movie, self).save(*args, **kwargs)
 
+    def get_url(self):
+        """Логику гиперссылки из шаблона html можно перенести в модель. Использую функцию reverse() в качестве аргумента айдишник объекта.
+        В итоге в шаблоне я просто обращаюсь к классу Movie и обращаюсь к этой функции"""
+        return reverse('movie_description', args=[self.slug, ])
+
+    def __str__(self):  # методом __str__ можно поменять тип отображения объектов.
+        return f'{self.name} - {self.rating}%'  # метод стр переопределяет поведение экземпляров
 
 #  python manage.py shell_plus --print-sql

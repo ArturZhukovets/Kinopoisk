@@ -14,8 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+
+admin.site.site_header = "My admin page"     # admin.site.site_header - устанавливает имя, отображаемое на главное в админ панели
+admin.site.index_title = "My super-admin page"  # admin.site.index_title - устанавливает имя заголовка
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('movie_app.urls')),
+    path('__debug__/', include('debug_toolbar.urls')),
 ]
