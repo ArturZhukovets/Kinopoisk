@@ -7,6 +7,7 @@ from django.db.models import F     # Используется для сорти�
 from django.db.models import Sum, Max, Min, Count, Avg
 from django.db.models import Value    #Значение для метода annotate()
 
+
 def show_all_movies(request):
     """Отображение всех фильмов на главной странице. В Movie.objects.all() Лежит QuerySet
     Пройдясь циклом по QuerySet объекту я вызываю в каждой итерации метод save() тем самым я сохраняю в БД всю инфу с Models
