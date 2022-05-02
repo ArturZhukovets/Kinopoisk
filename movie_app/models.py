@@ -18,7 +18,7 @@
 !!!!!!!!!!  ДОКУМЕНТАЦИЯ ПО РАБОТЕ С QUERYSET https://docs.djangoproject.com/en/3.2/ref/models/querysets/
 Фильтрация. Метод get() позволяет получить любую ОДНУ запись с уникальным значением столбца (проще всего исп. с id)
             Метод filter() может возвращать несколько записей рабоатет как WHERE в SQL (objects.filter(year__isnull=False)) (objects.filter(year__isnull=True, name='Avatar'))
-__contains - СОДЕРЖИТ, __startswith - НАЧИНАЕТСЯ С, __endswith - ЗАКАНЧИВАЕТСЯ, __in - аналог python IN, __gt - БОЛЬШЕ ЧЕМ, __lt - МЕНЬШЕ ЧЕМ
+__contains - СОДЕРЖИТ, __startswith - НАЧИНАЕТСЯ С, __endswith - ЗАКАНЧИВАЕТСЯ, __in - аналог python IN, __gte - БОЛЬШЕ ЧЕМ, __lt - МЕНЬШЕ ЧЕМ
             Метод create() позволяет создавать объект без метода save(). ---Movie.objects.create(name='Avatar-2', rating=83)---
             Метод exclude() работает как filter, но он ИСКЛЮЧАЕТ из выборки (как !=)
 
@@ -36,8 +36,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify    #Для slug
 from django.utils.safestring import SafeText, mark_safe
+from django.core.validators import MaxValueValidator, MinValueValidator
 
-# from movie_app.models import Movie
 
 
 class Movie(models.Model):
@@ -54,9 +54,10 @@ class Movie(models.Model):
         ('USD', 'DOLLARS')
     ]
     name = models.CharField(max_length=40)  # создаю поле, в котором содержится строка не более 40 символов
-    rating = models.IntegerField()  # создаю поле, в котором содержатся только числа integer
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])  # поле integer, в котором
+    # Минимальное значение = 1, максимальное значение = 100
     year = models.IntegerField(null=True, blank=True)  # позволил сохранять в таблице значение Null, аргумент blank позволяет оставлять незаполненное поле
-    budget = models.IntegerField(default=1000000)  # установил дефолтное значение
+    budget = models.IntegerField(default=1000000, validators=[MinValueValidator(1)])  # установил дефолтное значение и мин. значение
     ### SlugField Специальный метод у класса models, позволяющий создавать Slug url
     slug = models.SlugField(max_length=30, default='', null=False, db_index=True, allow_unicode=True)  # По-дефолту пустая строка. allow_unicode для работы с кириллицей. db_index для более быстрого поиска
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default=USD)
