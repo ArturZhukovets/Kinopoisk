@@ -45,7 +45,7 @@ class Director(models.Model):
     director_email = models.EmailField(max_length=30)
 
     def __str__(self):
-        return f'{self.second_name} {self.first_name[0]}.'
+        return f'{self.second_name} {self.first_name}'
 
 
 class Actor(models.Model):
