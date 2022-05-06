@@ -89,7 +89,7 @@ class Movie(models.Model):
     slug = models.SlugField(max_length=30, default='', null=False, db_index=True, allow_unicode=True)  # По-дефолту пустая строка. allow_unicode для работы с кириллицей. db_index для более быстрого поиска
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default=USD)
     director = models.ForeignKey(Director, on_delete=models.PROTECT, null=True)   # Один-ко-многим с таблицей Director
-    actors = models.ManyToManyField(Actor)
+    actors = models.ManyToManyField(Actor, related_name='films')
 
     def save(self, *args, **kwargs):
         """Переопределяю метод save() у родительского класса Model"""

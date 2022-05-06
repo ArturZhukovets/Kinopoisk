@@ -8,6 +8,12 @@
     <h3>Имя - {{ director_inf.first_name }}</h3>
     <h3>Фамилия - {{ director_inf.second_name }}</h3>
     <h3>Почта - {{ director_inf.director_email }}</h3>
+    <hr>
+    <ul>
+        {% for films in director_inf.movie_set.all %}
+            <li>{{films}}</li>
+        {% endfor %}
+    </ul>
 
 
 

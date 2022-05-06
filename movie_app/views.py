@@ -62,3 +62,22 @@ def info_about_director(request, id_director: int):
     }
     return render(request, 'movie_app/director_info.html', context=context)
 
+
+def show_all_actors(request):
+    actors = Actor.objects.order_by('first_name')
+    context = {
+        "actors": actors
+    }
+    return render(request, 'movie_app/all_actors.html', context=context)
+
+
+def info_about_actor(request, id_actor: int):
+    actor_inf = get_object_or_404(Actor, id=id_actor)
+    context = {
+        "actor_inf": actor_inf
+    }
+    if actor_inf.actor_gender == 'f':
+        actor_inf.actor_gender = 'Женский'
+    if actor_inf.actor_gender == 'm':
+        actor_inf.actor_gender = 'Мужской'
+    return render(request, 'movie_app/actor_info.html', context=context)
