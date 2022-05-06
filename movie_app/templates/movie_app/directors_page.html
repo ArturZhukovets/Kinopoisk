@@ -1,0 +1,14 @@
+{% extends 'movie_app/base.html' %}
+
+{% block title %}Режиссёры{% endblock %}
+
+{% block content %}
+    <h1>Список всех режиссёров</h1>
+    {% for director_view in directors %}
+    <ul>
+        
+            <li><a href="{% url 'director_description' director_view.id %}">{{director_view}}</a></li> <!-- ВОТ ТАК ЮЗАТЬ ulr тег-->
+        
+    </ul>
+    {% endfor %}
+{% endblock %}

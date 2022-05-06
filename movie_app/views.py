@@ -2,7 +2,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse
-from .models import Movie
+from .models import Movie, Director, Actor
 from django.db.models import F     # Используется для сортировки, например. В данном случаем F используется для сортировки null'ов
 from django.db.models import Sum, Max, Min, Count, Avg
 from django.db.models import Value    #Значение для метода annotate()
@@ -14,7 +14,7 @@ def show_all_movies(request):
     В данном случае я сохранял поле slug, которое определил в Бд после того как заполнил таблицу. Но после того как я сохранил методом save() все данные,
     цикл for. Разумеется нужно запустить сервер, чтобы все заработало!
     При помощи функции F можно обращаться к столбцу таблицу и производить манипуляции с ним
-    annotate() - позволяет создавать при запросе новые колонки при этом не сохраняя их в базе данных.(полезная штука, но хз где ее применять)
+    aggregate() - позволяет создавать при запросе новые колонки при этом не сохраняя их в базе данных.(полезная штука, но хз где ее применять)
     """
     movies = Movie.objects.order_by(F('year').desc(nulls_last=True))    # Поля со значением null отображаются в конце
     # movies = Movie.objects.annotate(
@@ -42,3 +42,23 @@ def show_one_movie_description(request, slug_movie: str):
     return render(request, 'movie_app/description_movie.html', context=
                   {'movie': movie}
                   )
+
+
+def show_all_directors(request):
+    """Создаю views всех режиссёров. Обращаемся к базе, сортируем все объекты по алфавиту, получаем QuerySet, отправляем
+    его в context."""
+    directors = Director.objects.order_by('second_name')
+    context = {
+        'directors': directors
+    }
+    return render(request, 'movie_app/directors_page.html', context=context)
+
+
+def info_about_director(request, id_director: int):
+    """Создаю views с информацией о режиссёре"""
+    director_inf = get_object_or_404(Director, id=id_director)
+    context = {
+        "director_inf": director_inf
+    }
+    return render(request, 'movie_app/director_info.html', context=context)
+

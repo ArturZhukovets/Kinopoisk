@@ -1,0 +1,14 @@
+{% extends 'movie_app/base.html' %}
+
+{% block title %}Информация о режиссёре{% endblock %}
+
+{% block content %}
+
+    <h1> Режиссёр </h1>
+    <h3>Имя - {{ director_inf.first_name }}</h3>
+    <h3>Фамилия - {{ director_inf.second_name }}</h3>
+    <h3>Почта - {{ director_inf.director_email }}</h3>
+
+
+
+{% endblock %}

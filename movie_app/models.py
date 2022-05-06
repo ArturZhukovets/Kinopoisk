@@ -39,6 +39,33 @@ from django.utils.safestring import SafeText, mark_safe
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 
+class Director(models.Model):
+    first_name = models.CharField(max_length=20)
+    second_name = models.CharField(max_length=20)
+    director_email = models.EmailField(max_length=30)
+
+    def __str__(self):
+        return f'{self.second_name} {self.first_name}'
+
+
+class Actor(models.Model):
+    MALE = 'm'
+    FEMALE = 'f'
+    GENDER_CHOICEC = [
+        ('m', 'MAN'),
+        ('f', 'FEMALE'),
+
+    ]
+    first_name = models.CharField(max_length=20)
+    second_name = models.CharField(max_length=20)
+    actor_gender = models.CharField(max_length=1, choices=GENDER_CHOICEC, default=MALE)
+
+    def __str__(self):
+        if self.actor_gender == self.MALE:
+            return f'Актёр {self.first_name} {self.second_name}'
+        elif self.actor_gender == self.FEMALE:
+            return f'Актриса {self.first_name} {self.second_name}'
+
 
 class Movie(models.Model):
     """Создаю таблицу, через ООП. Создаётся класс, он будет являться таблицей. Наследуется от models.Model.
@@ -61,6 +88,8 @@ class Movie(models.Model):
     ### SlugField Специальный метод у класса models, позволяющий создавать Slug url
     slug = models.SlugField(max_length=30, default='', null=False, db_index=True, allow_unicode=True)  # По-дефолту пустая строка. allow_unicode для работы с кириллицей. db_index для более быстрого поиска
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default=USD)
+    director = models.ForeignKey(Director, on_delete=models.PROTECT, null=True)   # Один-ко-многим с таблицей Director
+    actors = models.ManyToManyField(Actor)
 
     def save(self, *args, **kwargs):
         """Переопределяю метод save() у родительского класса Model"""
