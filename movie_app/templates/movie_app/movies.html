@@ -9,8 +9,8 @@
         {% for movie in movies %}
         <li><a href="{{ movie.get_url }}">{{movie.name}}</a>
             рейтинг - {{ movie.rating }} |
-            бюджет - {{ movie.rating }} |
-            год - {{ movie.rating }}.
+            бюджет - {{ movie.budget }} |
+            год - {{ movie.year }}.
         </li>
         {% endfor %}
     </ul>

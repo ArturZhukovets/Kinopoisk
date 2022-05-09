@@ -3,11 +3,28 @@
 {% block title %}{{movie.name}}{% endblock %}
 
 {% block content %}
-<h2> Описание фильма </h2>
+<h2> Информация о фильме </h2>
 <h3>Название: {{ movie.name }}</h3>
 <h3>Рейтинг: {{ movie.rating }}</h3>
 <h3>Бюджет: {{ movie.budget }}</h3>
 <h3>Год: {{ movie.year|default:'Неизвестен' }}</h3>
+<hr>
+
+    <h2>Информация о режиссёре</h2>
+    <h3>Имя - {{ movie.director.first_name }}</h3>
+    <h3>Фамилия - {{ movie.director.second_name }}</h3>
+    <h3>Почта - {{ movie.director.director_email }}</h3>
+
+
+
+<hr>
+<h3>Список Актёров:</h3>
+<ul>
+    {% for actor_movie in movie.actors.all %}
+        <li>{{actor_movie.first_name}} {{actor_movie.second_name}}</li>
+    {% endfor %}
+
+</ul>
 
 
 {% endblock %}
