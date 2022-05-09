@@ -5,13 +5,12 @@
 {% block content %}
 
     <h1> Режиссёр </h1>
-    <h3>Имя - {{ director_inf.first_name }}</h3>
-    <h3>Фамилия - {{ director_inf.second_name }}</h3>
+    <h3>{{ director_inf }}</h3>
     <h3>Почта - {{ director_inf.director_email }}</h3>
     <hr>
     <ul>
         {% for films in director_inf.movie_set.all %}
-            <li>{{films}}</li>
+            <li><a href="{% url 'movie_description' films.slug %}">{{films}}</a></li>
         {% endfor %}
     </ul>
 

@@ -21,7 +21,7 @@
 <h3>Список Актёров:</h3>
 <ul>
     {% for actor_movie in movie.actors.all %}
-        <li>{{actor_movie.first_name}} {{actor_movie.second_name}}</li>
+        <li><a href="{% url 'actor_description' actor_movie.id %}">{{actor_movie.first_name}} {{actor_movie.second_name}}</a></li>
     {% endfor %}
 
 </ul>
