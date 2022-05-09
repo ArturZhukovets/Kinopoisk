@@ -48,17 +48,27 @@ class Director(models.Model):
         return f'{self.second_name} {self.first_name}'
 
 
+class DressingRoom(models.Model):
+    floor_number = models.IntegerField()
+    room_number = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.floor_number}-{self.room_number}"
+
+
 class Actor(models.Model):
     MALE = 'm'
     FEMALE = 'f'
     GENDER_CHOICEC = [
-        ('m', 'MAN'),
-        ('f', 'FEMALE'),
+        (MALE, 'Male'),
+        (FEMALE, 'Female'),
+
 
     ]
     first_name = models.CharField(max_length=20)
     second_name = models.CharField(max_length=20)
     actor_gender = models.CharField(max_length=1, choices=GENDER_CHOICEC, default=MALE)
+    dressing = models.OneToOneField(DressingRoom, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         if self.actor_gender == self.MALE:
@@ -89,7 +99,7 @@ class Movie(models.Model):
     slug = models.SlugField(max_length=30, default='', null=False, db_index=True, allow_unicode=True)  # По-дефолту пустая строка. allow_unicode для работы с кириллицей. db_index для более быстрого поиска
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default=USD)
     director = models.ForeignKey(Director, on_delete=models.PROTECT, null=True)   # Один-ко-многим с таблицей Director
-    actors = models.ManyToManyField(Actor, related_name='films')
+    actors = models.ManyToManyField(Actor, related_name='movies')
 
     def save(self, *args, **kwargs):
         """Переопределяю метод save() у родительского класса Model"""

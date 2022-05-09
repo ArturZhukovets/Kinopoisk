@@ -3,8 +3,12 @@
 {% block title %}{{ actor_inf.first_name.second_name }}{% endblock %}
 
 {% block content %}
+    {% if actor_inf.actor_gender == 'Мужской' %}
+        <h1> Актёр </h1>
+    {% else %}
+        <h1> Актриса </h1>
 
-    <h1> Актёр </h1>
+    {% endif %}
     <h3>Имя - {{ actor_inf.first_name }}</h3>
     <h3>Фамилия - {{ actor_inf.second_name }}</h3>
     <h3>Пол - {{ actor_inf.actor_gender }}</h3>
@@ -15,8 +19,8 @@
     <h2>Фильмы, в которых сыграл {{ actor_inf.first_name}}:</h2>
         {% endif %}
     <ul>
-        {% for films in actor_inf.films.all%}
-        <li>{{ films}}</li>
+        {% for movies in actor_inf.movies.all%}
+        <li>{{ movies}}</li>
         {% endfor %}
     </ul>
 

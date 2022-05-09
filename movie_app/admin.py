@@ -1,6 +1,6 @@
 from django.db.models import QuerySet
 from django.contrib import admin
-from .models import Movie, Director, Actor
+from .models import Movie, Director, Actor, DressingRoom
 
 """Регистрируем модель в админке. в Аргументах необходимо передать название модели
 Для отображения колонок таблицы в адми панели необходимо создать класс в admin.py в котором с добавлением "Admin"
@@ -19,22 +19,22 @@ class RatingFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return [
-            ('<50', 'Низкий'),
-            ('от 50 до 65', 'Средний'),
-            ('от 66 до 79', 'Высокий'),
-            ('>=80', 'Высочайший'),
+            ('0-49', 'Низкий'),
+            ('50-65', 'Средний'),
+            ('66-79', 'Высокий'),
+            ('80-100', 'Высочайший'),
         ]
 
     def queryset(self, request, queryset: QuerySet):
         """В self.value() Подставляется первое значение из кортежа для правильного использования фильтров
         вспоминаем Django ORM filter"""
-        if self.value() == '<50':
+        if self.value() == '0-49':
             return queryset.filter(rating__lt=50)  # Команды из Django ORM | filter
-        if self.value() == 'от 50 до 65':
+        if self.value() == '50-65':
             return queryset.filter(rating__gte=50).filter(rating__lt=65)
-        if self.value() == 'от 66 до 79':
+        if self.value() == '66-79':
             return queryset.filter(rating__gte=66).filter(rating__lt=79)
-        if self.value() == '>=80':
+        if self.value() == '80-100':
             return queryset.filter(rating__gte=79)
 
 
@@ -42,7 +42,7 @@ class RatingFilter(admin.SimpleListFilter):
 class MovieAdmin(admin.ModelAdmin):
     """Все аргументы данного класса в той или иной форме влияют на отображение
     полей в админке."""
-    list_display = ['name', 'rating', 'budget', 'rating_description', 'director']  # отображаются в таблице Movies
+    list_display = ['name', 'rating', 'budget', 'director', 'rating_description']  # отображаются в таблице Movies
     list_editable = ['rating', 'budget', 'director']                                # Позволяет изменять данные
     # fields = ['name', 'rating']  # Поля, по которым будет добавляться новая запись в админке.
     exclude = ['slug']  # Исключает поле slug при создании
@@ -77,7 +77,7 @@ class MovieAdmin(admin.ModelAdmin):
         count_updated = qs.update(currency=Movie.EURO)
         self.message_user(
             request,
-            f'Было обновлено {count_updated} записей'
+            f'Было обновлено {count_updated}'
         )
 
     @admin.action(description='Установить валюту RUBLES')  # Описание в админке
@@ -89,5 +89,5 @@ class MovieAdmin(admin.ModelAdmin):
         )
 
 
-admin.site.register((Actor, Director))      # Можно регать, передавая аргументы через кортеж
+admin.site.register((Actor, Director, DressingRoom))      # Можно регать, передавая аргументы через кортеж
 

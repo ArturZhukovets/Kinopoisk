@@ -24,7 +24,7 @@ def show_all_movies(request):
     #     int_field=Value(100),
     #     new_budget=F('budget') + 100   # обращаюсь к колонке budget и увеличиваю его значение на сто
     # )
-    count = Movie.objects.all().count()
+    count = movies.count()
     agg = movies.aggregate(Avg("budget"), Min("rating"), Max("rating"))
     #     movie.save()
     return render(request, 'movie_app/movies.html', {
