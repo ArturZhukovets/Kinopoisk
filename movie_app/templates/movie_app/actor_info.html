@@ -20,7 +20,9 @@
         {% endif %}
     <ul>
         {% for movies in actor_inf.movies.all%}
-        <li>{{ movies}}</li>
+
+           <a href="{% url 'movie_description' movies.slug %}"><li>{{ movies}}</li> </a>
+
         {% endfor %}
     </ul>
 

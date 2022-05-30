@@ -1,10 +1,14 @@
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse
 from .models import Movie, Director, Actor
 from django.db.models import F     # Используется для сортировки, например. В данном случаем F используется для сортировки null'ов
 from django.db.models import Sum, Max, Min, Count, Avg
+from .forms import MovieForm
+from django.views.generic.base import TemplateView
+from django.views.generic import ListView, DetailView
+from django.views import View
 from django.db.models import Value    #Значение для метода annotate()
 
 
@@ -35,49 +39,66 @@ def show_all_movies(request):
                   )
 
 
-def show_one_movie_description(request, slug_movie: str):
-    """get_object_or_404 - Работает как функция get(), но если не передано никакого значения отдаёт response 404"""
-    movie = get_object_or_404(Movie, slug=slug_movie)    # Первый аргумент Объект, второй название колонки которую ищем
-
-    return render(request, 'movie_app/description_movie.html', context=
-                  {'movie': movie}
-                  )
+class ShowMovieDescription(DetailView):
+    """Передавать аргумент url'a либо через 'slug', либо 'pk' """
+    model = Movie
+    context_object_name = 'movie'
+    template_name = 'movie_app/description_movie.html'
 
 
-def show_all_directors(request):
-    """Создаю views всех режиссёров. Обращаемся к базе, сортируем все объекты по алфавиту, получаем QuerySet, отправляем
-    его в context."""
-    directors = Director.objects.order_by('second_name')
+class ShowAllDirectors(ListView):
+    model = Director
+    context_object_name = 'directors'
+    template_name = 'movie_app/directors_page.html'
+
+    def get_queryset(self):
+        """Переопределив родительский метод get_queryset, можно менять содержимое/сортировку объекта из БД """
+        query = super().get_queryset()
+        query = query.order_by('second_name')
+        x = 0
+        return query
+
+
+class InfoAboutDirector(DetailView):
+    model = Director
+    context_object_name = 'director_inf'
+    template_name = 'movie_app/director_info.html'
+
+
+class ShowActors(ListView):
+    template_name = 'movie_app/all_actors.html'
+    model = Actor
+    context_object_name = 'actors'
+
+    def get_queryset(self):
+        """Переопределил метод get_queryset, отсортировав отображение актеров"""
+        queryset = super().get_queryset()
+        ordered_queryset = queryset.order_by('first_name')
+        return ordered_queryset
+
+
+class InfoAboutActor(View):
+    def get(self, request, pk: int):
+        actor_inf = Actor.objects.get(id=pk)
+        context = {
+            'actor_inf': actor_inf
+        }
+        if actor_inf.actor_gender == 'f':
+            actor_inf.actor_gender = 'Женский'
+        if actor_inf.actor_gender == 'm':
+            actor_inf.actor_gender = 'Мужской'
+        return render(request, 'movie_app/actor_info.html', context=context)
+
+
+def add_movie_form(request):
+    if request.method == 'POST':
+        form = MovieForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('film')
+    else:
+        form = MovieForm()
     context = {
-        'directors': directors
+        'form': form
     }
-    return render(request, 'movie_app/directors_page.html', context=context)
-
-
-def info_about_director(request, id_director: int):
-    """Создаю views с информацией о режиссёре"""
-    director_inf = get_object_or_404(Director, id=id_director)
-    context = {
-        "director_inf": director_inf
-    }
-    return render(request, 'movie_app/director_info.html', context=context)
-
-
-def show_all_actors(request):
-    actors = Actor.objects.order_by('first_name')
-    context = {
-        "actors": actors
-    }
-    return render(request, 'movie_app/all_actors.html', context=context)
-
-
-def info_about_actor(request, id_actor: int):
-    actor_inf = get_object_or_404(Actor, id=id_actor)
-    context = {
-        "actor_inf": actor_inf
-    }
-    if actor_inf.actor_gender == 'f':
-        actor_inf.actor_gender = 'Женский'
-    if actor_inf.actor_gender == 'm':
-        actor_inf.actor_gender = 'Мужской'
-    return render(request, 'movie_app/actor_info.html', context=context)
+    return render(request, 'movie_app/add_movie.html', context=context)

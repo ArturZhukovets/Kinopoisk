@@ -1,0 +1,20 @@
+{% extends 'movie_app/base.html' %}
+
+{% block title %}Добавить фильм{% endblock %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    {% for el in form %}
+       <div>
+           {{ el.label_tag }}
+           {{ el.errors }}
+           {{ el }}
+       </div><br>
+    {% endfor %}
+
+    <button type="submit">Отправить</button>
+</form>
+
+{% endblock %}
+
